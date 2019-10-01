@@ -1,0 +1,72 @@
+var db = require('../models/dbconnection');
+
+var Strain = {
+
+  getAllItems: function (req, res) {
+
+    let pathname = req._parsedUrl.pathname.split('/');
+    let section = pathname[1];
+    var results = db.query('SELECT * FROM ??', [section], function (error, results, fields) {
+      if (error) {
+        var apiResult = {};
+        apiResult.meta = {
+          table: section,
+          type: 'collection',
+          total: 0
+        }
+        apiResult.data = [];
+        res.json(apiResult);
+      }
+      var resultJson = JSON.stringify(results);
+      resultJson = JSON.parse(resultJson);
+      var apiResult = {};
+
+      apiResult.meta = {
+        table: section,
+        type: 'collection',
+        total: 1,
+        total_entries: 0
+      }
+      apiResult.data = resultJson;
+      res.json(apiResult);
+    });
+
+  },
+
+  getItemById: function (req, res) {
+
+    id = req.params.id;
+
+    var results = db.query('SELECT * FROM strains WHERE id = ?', [id], function (error, results, fields) {
+
+      if (error) {
+        console.log(error);
+        var apiResult = {};
+        apiResult.meta = {
+          table: 'strains',
+          type: 'collection',
+          total: 0
+        }
+        apiResult.data = [];
+        res.json(apiResult);
+        return;
+      }
+
+      console.log(results);
+      var resultJson = JSON.stringify(results);
+      console.log(resultJson);
+      resultJson = JSON.parse(resultJson);
+      var apiResult = {};
+      apiResult.meta = {
+        table: 'strains',
+        type: 'collection',
+        total: 1,
+        total_entries: 0
+      }
+      apiResult.data = resultJson;
+      res.json(apiResult);  
+    });
+  }
+}
+
+module.exports = Strain;
